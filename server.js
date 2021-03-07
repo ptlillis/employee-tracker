@@ -101,23 +101,23 @@ function createEmployee() {
     {
       type: "input",
       message: "First Name?",
-      name: "firstname",
+      name: "first_name",
     },
     {
       type: "input",
       message: "Last Name?",
-      name: "lastname",
+      name: "last_name",
     },
     {
       type: "list",
       message: "what is the employee's role?",
-      name: "roleid",
+      name: "role_id",
       choices: [1,2,3]
     },
     {
       type: "input",
-      message: "Who is their manager? (please use managerid as a number",
-      name: "managerid"
+      message: "Who is their manager? (please use manager_id as a number",
+      name: "manager_id"
     }
   ])
   .then (function(res){
@@ -153,7 +153,7 @@ function seeEmployees() {
 function cutEmployee(){
   let roster = [];
   connection.query(
-    "SELECT employee.firstname, employee.lastname FROM employees", (err,res) => {
+    "SELECT employee.first_name, employee.last_name FROM employees", (err,res) => {
       for (let i = 0; i < res.length; i++){
         roster.push(res[i].firstname + " " + res[i].lastname);
       }
@@ -169,7 +169,7 @@ function cutEmployee(){
   ])
   .then (function(res){
     const query = connection.query(
-      `DELETE FROM employees WHERE concat(firstname, ' ' ,lastname) = '${res.employee}'`,
+      `DELETE FROM employees WHERE concat(first_name, ' ' ,last_name) = '${res.employee}'`,
         function(err, res) {
         if (err) throw err;
         console.log( "Employee has been deleted");
