@@ -12,4 +12,4 @@ once properly installed and connected, run node server.js in the terminal. the c
 
 ## Issues
 
-I'm still struggling with the create employee and assign a role. I have the choices listed with labels, but they are not displaying in the command line. With more time, I plan to re-assess joins and expand database functionality.
+I'm still struggling with the full functionality here, but I can confirm I am getting some of the information into my tables. I am struggling most on the Update Employee functions, the errors persist. I will keep working at this and attempt to re-submit.
