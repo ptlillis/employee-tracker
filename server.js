@@ -1,7 +1,10 @@
 //requiring dependencies 
 
 const mysql = require('mysql');
+const promisemysql = require("promise-mysql");
 const inquirer = require('inquirer');
+const cTable = require('console.table');
+
 
 //creating connection to database
 
@@ -257,7 +260,7 @@ function createRole() {
 //defining view all current roles function, which initializes a query to SELECT all from ROLES table, and display in a console.table
 
 const seeRoles = () => {
-  connection.query('SELECT roles.id,roles.title,roles.salary  FROM employee_tracker_db.roles inner join employee_tracker_db.departments ON (roles.department_id = departments.id) ', (err, res) => {
+  connection.query('SELECT roles.id,roles.title,roles.salary  FROM employeeTracker_db.roles inner join employeeTracker_db.departments ON (roles.department_id = departments.id) ', (err, res) => {
     if (err) throw err;
     // Log all results of the SELECT statement
     console.table(res);
@@ -267,7 +270,61 @@ const seeRoles = () => {
 
 
 function updateEmployee(){
-  connection.query ("UPDATE ?? FROM employees")
+  let employeesCollection = []
+  let roleCollection = []
+promisemysql.connection(
+
+).then((connect) => {
+  return Promise.all([
+    connect.query("SELECT id, title FROM roles ORDER BY title ASC"),
+    connect.query("SELECT employees.id, employees.first_name, employees.last_name AS Employee FROM employees ORDER BY employees.id ASC")
+  ])
+}).then(([roles, employees]) => {
+  for (i=0; i < employees.length; i++) {
+    employeesCollection.push(employees[i].id)
+  }
+
+  for (i=0; i < roles.length; i++){
+    roleCollection.push(roles[i].title)
+  }
+  return Promise.all([roles, employees])
+}).then(([roles, employees]) => {
+  inquirer.prompt([
+    {
+      name: "employee",
+      type: "list",
+      message: "Which employee will you be editing?",
+      choices: employeesCollection
+    }, {
+      name: "role",
+      type: "list",
+      message: "What is their new title?",
+      choices: roleCollection
+    },]).then((response) => {
+      var role_id;
+      var employee_id;
+      for (i=0; i < roles.length; i++){
+        if (response.roles == roles[i].title){
+            role_id = roles[i].id;
+        }
+    }
+
+    for (i=0; i < employees.length; i++){
+        if (response.employee == employees[i].id){
+            employee_id = employees[i].id;
+        }
+    }
+    connection.query(`UPDATE employee SET role_id = ${role_id} WHERE id = ${employee_id}`, (err, res) => {
+      if(err) return err;
+
+      console.log(`\n ${response.employee} ROLE UPDATED TO ${response.role}...\n `);
+
+      init();
+    });
+  });
+});
+
 }
+
 
 // all functions lead back to initial CLI function
