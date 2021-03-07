@@ -87,6 +87,8 @@ function init(){
       case "Exit":
         connection.end();
         break;
+      default:
+        text = "Let's work together!"
     
     }
   })
@@ -112,7 +114,7 @@ function createEmployee() {
       type: "list",
       message: "what is the employee's role?",
       name: "role_id",
-      choices: [1,2,3]
+      choices: [("Marketing Director", 1), ("Account Manager", 2), ("Internal HR Manager", 3), ("Legal Counsel", 4), ("Head of Accounts", 5), ("Paralegal", 6)]
     },
     {
       type: "input",
@@ -123,7 +125,7 @@ function createEmployee() {
   .then (function(res){
     console.log(res);
     const query = connection.query(
-      "INSERT INTO employee SET ?",
+      "INSERT INTO employees SET ?",
       res,
       function(err, res) {
         if (err) throw err;
@@ -140,7 +142,7 @@ function createEmployee() {
 function seeEmployees() {
 
   connection.query(
-        "SELECT * FROM employee",
+        "SELECT * FROM employees",
   function(err, res) {
     if (err) throw err;
     console.table(res);
@@ -153,9 +155,9 @@ function seeEmployees() {
 function cutEmployee(){
   let roster = [];
   connection.query(
-    "SELECT employee.first_name, employee.last_name FROM employees", (err,res) => {
+    "SELECT employees.first_name, employees.last_name FROM employees", (err,res) => {
       for (let i = 0; i < res.length; i++){
-        roster.push(res[i].firstname + " " + res[i].lastname);
+        roster.push(res[i].first_name + " " + res[i].last_name);
       }
   inquirer 
   .prompt ([ 
@@ -187,7 +189,7 @@ function cutEmployee(){
           .prompt([
             {
               type: "input",
-              name: "departmentTitle", 
+              name: "name", 
               message: "What is the name of this department?"
             }
           ])
@@ -196,7 +198,7 @@ function cutEmployee(){
             const query = connection.query(
               "INSERT INTO departments SET ?", 
               {
-                name: res.departmentTitle
+                name: res.name
               }, 
               function(err, res){
                 connection.query("SELECT * FROM departments", function(err, res){
@@ -215,6 +217,7 @@ function seeDepartments(){
             init();
           })
           }
+
 
 //defining createRole function, which takes in user data via CLI and initalizes INSERT query to insert response into corresponding fields
 
@@ -239,7 +242,7 @@ function createRole() {
         {
           title: res.title,
           salary: res.salary,
-          departmentid: res.department
+          departmentid: res.department_id
         },
         function (err,res){
           if (err, res){
@@ -253,16 +256,18 @@ function createRole() {
 
 //defining view all current roles function, which initializes a query to SELECT all from ROLES table, and display in a console.table
 
-function seeRoles(){
-  connection.query ("SELECT * FROM role", function(err, res){
+const seeRoles = () => {
+  connection.query('SELECT roles.id,roles.title,roles.salary  FROM employee_tracker_db.roles inner join employee_tracker_db.departments ON (roles.department_id = departments.id) ', (err, res) => {
+    if (err) throw err;
+    // Log all results of the SELECT statement
     console.table(res);
-    init();
-  })
-  }
+    init()
+  });
+};
 
 
 function updateEmployee(){
-  connection.query ("UPDATE ?? FROM employee")
+  connection.query ("UPDATE ?? FROM employees")
 }
 
 // all functions lead back to initial CLI function
