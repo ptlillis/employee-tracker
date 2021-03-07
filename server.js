@@ -6,9 +6,10 @@ const inquirer = require('inquirer');
 const cTable = require('console.table');
 
 
+
 //creating connection to database
 
-const connection = mysql.createConnection({
+const connection = mysql.createConnect({
   host: 'localhost',
 
   // Your port, if not 3306
@@ -272,8 +273,7 @@ const seeRoles = () => {
 function updateEmployee(){
   let employeesCollection = []
   let roleCollection = []
-promisemysql.connection(
-
+promisemysql.createConnect(connection
 ).then((connect) => {
   return Promise.all([
     connect.query("SELECT id, title FROM roles ORDER BY title ASC"),
